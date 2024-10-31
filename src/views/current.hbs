@@ -1,0 +1,11 @@
+<div class="current-user">
+    <h2>Current User</h2>
+    {{! The user object is passed to the view from the controller }}
+    <p><strong>First Name:</strong> {{user.first_name}}</p>
+    <p><strong>Email:</strong> {{user.email}}</p>
+    <p><strong>Password:</strong> {{user.password}}</p>
+    <p><strong>ID:</strong> {{user.id}}</p>
+    <p><strong>Created At:</strong> {{user.createdAt}}</p>
+    <p><strong>Updated At:</strong> {{user.updatedAt}}</p>
+    <a href="/logout">Logout</a>
+</div>
