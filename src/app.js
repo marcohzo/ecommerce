@@ -1,16 +1,17 @@
-import 'dotenv/config.js';
-import express from 'express';
-import mongoose from 'mongoose';
-import session from 'express-session';
-import MongoStore from 'connect-mongo';
-import cookieParser from 'cookie-parser';
-import passport from 'passport';
-import initializePassport from '../src/config/passport.config.js';
-import { passportCall } from './utils.js';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { engine } from 'express-handlebars';
-import userRouter from './routes/users.router.js';
+import "dotenv/config.js";
+import express from "express";
+import mongoose from "mongoose";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import cookieParser from "cookie-parser";
+import passport from "passport";
+import initializePassport from "../src/config/passport.config.js";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { engine } from "express-handlebars";
+import createUsersRouter from "./routes/users.router.js";
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,55 +21,51 @@ const _dirname = dirname(_filename);
 
 const MONGODB = process.env.MONGODB_URI;
 
-//configuracion de handlebars
-app.engine('hbs', engine({ extname: 'hbs' }));
-app.set('view engine', 'hbs');
-app.set('views', _dirname + '/views');
+// Configuración de handlebars
+app.engine("hbs", engine({ extname: "hbs" }));
+app.set("view engine", "hbs");
+app.set("views", _dirname + "/views");
 
-// Middleware para parsear el body
+// Middlewares globales
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Middleware para manejar cookies
-app.use(express.static('public'));
-app.use(express.json());
+app.use(express.static("public"));
 app.use(cookieParser());
 
-// Conexion a MongoDB
-mongoose.connect(MONGODB);
-  
-
-// Configurar sesion
-app.use(session ({
+// Configurar sesión
+app.use(
+  session({
     store: MongoStore.create({ mongoUrl: MONGODB, ttl: 600 }),
     secret: process.env.SECRET_KEY,
     resave: false,
-    saveUninitialized: false
-}));
+    saveUninitialized: false,
+  })
+);
 
-// Inicializar passport
+// Inicializar Passport
 initializePassport(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Rutas
-app.get('/current', passportCall('jwt'), (req, res) => {
-    res.render('current', {
-        message: 'User authenticated',
-        user: req.user
+const startServer = async () => {
+  try {
+    // Conectar a MongoDB
+    await mongoose.connect(MONGODB);
+    console.log("Connected to MongoDB.");
+
+    // Inicializar el router de usuarios
+    const userRouter = await createUsersRouter();
+    app.use("/", userRouter);
+
+    // Iniciar el servidor
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
     });
-})
+  } catch (error) {
+    console.error("Error starting the server:", error);
+    process.exit(1); // Finaliza el proceso si ocurre un error crítico
+  }
+};
 
-app.get('/login', (req, res) => {
-    res.render('login');
-})
-
-app.get('/register', (req, res) => {
-    res.render('register');
-})
-
-app.use('/', userRouter);
-
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-})
+// Llama a la función de inicio
+startServer();
