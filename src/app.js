@@ -1,6 +1,7 @@
+// app.js
+
 import "dotenv/config.js";
 import express from "express";
-import mongoose from "mongoose";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import cookieParser from "cookie-parser";
@@ -9,9 +10,8 @@ import initializePassport from "../src/config/passport.config.js";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { engine } from "express-handlebars";
-import createUsersRouter from "./routes/users.router.js";
-
-dotenv.config();
+import usersRouter from "./routes/users.router.js";
+import { initializeUsers } from "./dao/factory.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +20,7 @@ const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
 
 const MONGODB = process.env.MONGODB_URI;
+const SECRET_KEY = process.env.SECRET_KEY;
 
 // Configuración de handlebars
 app.engine("hbs", engine({ extname: "hbs" }));
@@ -32,30 +33,29 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// Configurar sesión
-app.use(
-  session({
-    store: MongoStore.create({ mongoUrl: MONGODB, ttl: 600 }),
-    secret: process.env.SECRET_KEY,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
-
-// Inicializar Passport
-initializePassport(passport);
-app.use(passport.initialize());
-app.use(passport.session());
-
+// Función de inicio
 const startServer = async () => {
   try {
-    // Conectar a MongoDB
-    await mongoose.connect(MONGODB);
-    console.log("Connected to MongoDB.");
+    // Inicializar los DAOs y conectarse a la base de datos
+    await initializeUsers();
 
-    // Inicializar el router de usuarios
-    const userRouter = await createUsersRouter();
-    app.use("/", userRouter);
+    // Configurar sesión (después de que la conexión a MongoDB esté establecida)
+    app.use(
+      session({
+        store: MongoStore.create({ mongoUrl: MONGODB, ttl: 600 }),
+        secret: SECRET_KEY,
+        resave: false,
+        saveUninitialized: false,
+      })
+    );
+
+    // Inicializar Passport
+    initializePassport(passport);
+    app.use(passport.initialize());
+    app.use(passport.session());
+
+    // Configurar las rutas
+    app.use("/", usersRouter);
 
     // Iniciar el servidor
     app.listen(PORT, () => {
@@ -63,7 +63,7 @@ const startServer = async () => {
     });
   } catch (error) {
     console.error("Error starting the server:", error);
-    process.exit(1); // Finaliza el proceso si ocurre un error crítico
+    process.exit(1);
   }
 };
 
