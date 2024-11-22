@@ -1,15 +1,20 @@
 import { Router } from "express";
-import authenticateJWT from "../middlewares/authenticateJWT.js";
 import {
   registerUser,
   loginUser,
   getCurrentUser,
 } from "../controllers/user.controller.js";
+import authenticateJWT from "../middlewares/authenticateJWT.js";
 
-const router = Router();
+const createUsersRouter = async () => {
+  await initializeUsers();
+  const router = Router();
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.get("/current", authenticateJWT, getCurrentUser);
+  router.post("/register", registerUser);
+  router.post("/login", loginUser);
+  router.get("/current", authenticateJWT, getCurrentUser);
 
-export default router;
+  return router;
+};
+
+export default createUsersRouter;

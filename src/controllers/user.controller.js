@@ -1,53 +1,39 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import User from "../dao/mongo/models/user.model.js";
-
-const saltRounds = 10;
-const secretKey = process.env.SECRET_KEY;
+import usersService from "../services/users.service.js";
 
 export const registerUser = async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
-    const user = new User({
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      email: req.body.email,
-      age: req.body.age,
-      password: hashedPassword,
+    const { first_name, last_name, email, password, age } = req.body;
+    const result = await usersService.registerUser({
+      first_name,
+      last_name,
+      email,
+      password,
+      age,
     });
-    await user.save();
-    res.redirect("/login");
+    res.status(201).send({ status: "success", payload: result });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).send({ status: "error", message: error.message });
   }
 };
 
 export const loginUser = async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
-    const validPassword = await bcrypt.compare(
-      req.body.password,
-      user.password
-    );
-    if (!validPassword) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
-    const token = jwt.sign({ email: user.email, role: user.role }, secretKey, {
-      expiresIn: "1h",
-    });
+    const { email, password } = req.body;
+    const token = await usersService.loginUser({ email, password });
     res.cookie("authToken", token, { httpOnly: true });
-    res.redirect("/current");
+    res
+      .status(200)
+      .send({ status: "success", message: "Login successful", token });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).send({ status: "error", message: error.message });
   }
 };
 
-export const getCurrentUser = (req, res) => {
-  res.render("current", {
-    message: "User authenticated",
-    user: req.user,
-  });
+export const getCurrentUser = async (req, res) => {
+  try {
+    const user = await usersService.getCurrentUser(req.user);
+    res.status(200).send({ status: "success", payload: user });
+  } catch (error) {
+    res.status(400).send({ status: "error", message: error.message });
+  }
 };
