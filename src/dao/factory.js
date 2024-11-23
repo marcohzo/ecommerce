@@ -1,36 +1,82 @@
-// factory.js
-
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-let Users;
+let UserDao;
+let UserRepository;
+let ProductDao;
+let ProductRepository;
 
 const entorno = (process.env.PERSISTENCE || "MONGO").toUpperCase().trim();
 const MONGODB = process.env.MONGODB_URI;
 
-const initializeUsers = async () => {
+const initializeDaosAndRepositories = async () => {
+  console.log(`Initializing DAOs and Repositories for ${entorno}...`);
   switch (entorno) {
     case "MONGO":
       try {
-        await mongoose.connect(MONGODB, {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        });
+        await mongoose.connect(MONGODB);
         console.log("Connected to MongoDB.");
 
+        // Usuarios
         const { default: UsersMongo } = await import("./mongo/users.mongo.js");
-        Users = new UsersMongo();
+        UserDao = new UsersMongo();
+
+        const { default: UserRepositoryMongo } = await import(
+          "../repositories/users/user.repository.mongo.js"
+        );
+        UserRepository = new UserRepositoryMongo();
+
+        // Productos
+        const { default: ProductsMongo } = await import(
+          "./mongo/products.mongo.js"
+        );
+        ProductDao = new ProductsMongo();
+
+        const { default: ProductRepositoryMongo } = await import(
+          "../repositories/products/product.repository.mongo.js"
+        );
+        ProductRepository = new ProductRepositoryMongo();
       } catch (error) {
-        console.error("Error connecting to MongoDB:", error);
+        console.error(
+          "Error initializing DAOs and Repositories for MongoDB:",
+          error
+        );
         throw error;
       }
       break;
 
     case "MEMORY":
-      const { default: UsersMemory } = await import("./memory/users.memory.js");
-      Users = new UsersMemory();
+      try {
+        // Usuarios
+        const { default: UsersMemory } = await import(
+          "./memory/users.memory.js"
+        );
+        UserDao = new UsersMemory();
+
+        const { default: UserRepositoryMemory } = await import(
+          "../repositories/users/user.repository.memory.js"
+        );
+        UserRepository = new UserRepositoryMemory();
+
+        // Productos
+        const { default: ProductsMemory } = await import(
+          "./memory/products.memory.js"
+        );
+        ProductDao = new ProductsMemory();
+
+        const { default: ProductRepositoryMemory } = await import(
+          "../repositories/products/product.repository.memory.js"
+        );
+        ProductRepository = new ProductRepositoryMemory();
+      } catch (error) {
+        console.error(
+          "Error initializing DAOs and Repositories for Memory:",
+          error
+        );
+        throw error;
+      }
       break;
 
     default:
@@ -39,12 +85,45 @@ const initializeUsers = async () => {
 };
 
 const getUsersDao = () => {
-  if (!Users) {
+  if (!UserDao) {
     throw new Error(
-      "Users DAO not initialized. Please call initializeUsers() first."
+      "User DAO not initialized. Please call initializeDaosAndRepositories() first."
     );
   }
-  return Users;
+  return UserDao;
 };
 
-export { initializeUsers, getUsersDao };
+const getUserRepository = () => {
+  if (!UserRepository) {
+    throw new Error(
+      "User Repository not initialized. Please call initializeDaosAndRepositories() first."
+    );
+  }
+  return UserRepository;
+};
+
+const getProductsDao = () => {
+  if (!ProductDao) {
+    throw new Error(
+      "Product DAO not initialized. Please call initializeDaosAndRepositories() first."
+    );
+  }
+  return ProductDao;
+};
+
+const getProductRepository = () => {
+  if (!ProductRepository) {
+    throw new Error(
+      "Product Repository not initialized. Please call initializeDaosAndRepositories() first."
+    );
+  }
+  return ProductRepository;
+};
+
+export {
+  initializeDaosAndRepositories,
+  getUsersDao,
+  getUserRepository,
+  getProductsDao,
+  getProductRepository,
+};

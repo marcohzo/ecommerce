@@ -6,12 +6,14 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import cookieParser from "cookie-parser";
 import passport from "passport";
-import initializePassport from "../src/config/passport.config.js";
+/* import initializePassport from "../src/config/passport.config.js"; */
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { engine } from "express-handlebars";
-import usersRouter from "./routes/users.router.js";
-import { initializeUsers } from "./dao/factory.js";
+
+/* import productRouter from "./routes/product.routes.js"; */
+/* import cartRouter from "./routes/cart.routes.js"; */
+import { initializeDaosAndRepositories } from "./dao/factory.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -37,7 +39,7 @@ app.use(cookieParser());
 const startServer = async () => {
   try {
     // Inicializar los DAOs y conectarse a la base de datos
-    await initializeUsers();
+    //await initializeDaosAndRepositories();
 
     // Configurar sesión (después de que la conexión a MongoDB esté establecida)
     app.use(
@@ -50,12 +52,14 @@ const startServer = async () => {
     );
 
     // Inicializar Passport
-    initializePassport(passport);
+    /* initializePassport(passport); */
     app.use(passport.initialize());
     app.use(passport.session());
-
+    const route = await import("./routes/users.router.js");
     // Configurar las rutas
-    app.use("/", usersRouter);
+    app.use("/", route.default);
+    /*  app.use("/products", productRouter); */
+    /* app.use("/carts", cartRouter); */
 
     // Iniciar el servidor
     app.listen(PORT, () => {
@@ -68,4 +72,7 @@ const startServer = async () => {
 };
 
 // Llama a la función de inicio
-startServer();
+//startServer();
+initializeDaosAndRepositories().then(() => {
+  startServer();
+});

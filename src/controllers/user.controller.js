@@ -31,9 +31,9 @@ export const loginUser = async (req, res) => {
 
 export const getCurrentUser = async (req, res) => {
   try {
-    const user = await usersService.getCurrentUser(req.user);
-    res.status(200).send({ status: "success", payload: user });
+    const userDTO = await usersService.getCurrentUser(req.user);
+    res.status(200).send({ status: "success", payload: userDTO });
   } catch (error) {
-    res.status(400).send({ status: "error", message: error.message });
+    res.status(500).send({ status: "error", message: error.message });
   }
 };

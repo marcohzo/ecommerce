@@ -1,42 +1,36 @@
-import { getUsersDao } from "../dao/factory.js";
+import { getUserRepository } from "../dao/factory.js";
+import UserDTO from "../dao/DTOs/user.dto.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const Users = getUsersDao();
+const UsersRepository = getUserRepository();
 const saltRounds = 10;
 const secretKey = process.env.SECRET_KEY;
 
-const registerUser = async ({
-  first_name,
-  last_name,
-  email,
-  password,
-  age,
-}) => {
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-  return await Users.createUser({
-    first_name,
-    last_name,
-    email,
+const registerUser = async (userData) => {
+  const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
+  const newUser = await UsersRepository.createUser({
+    ...userData,
     password: hashedPassword,
-    age,
   });
+  return newUser;
 };
 
 const loginUser = async ({ email, password }) => {
-  const user = await Users.getUserByEmail(email);
+  const user = await UsersRepository.getUserByEmail(email);
   if (!user) throw new Error("Invalid email or password");
 
   const isValidPassword = await bcrypt.compare(password, user.password);
   if (!isValidPassword) throw new Error("Invalid email or password");
 
-  return jwt.sign({ email: user.email, role: user.role }, secretKey, {
+  const token = jwt.sign({ id: user.id, email: user.email }, secretKey, {
     expiresIn: "1h",
   });
+  return token;
 };
 
 const getCurrentUser = async (userData) => {
-  return userData;
+  return new UserDTO(userData);
 };
 
 const usersService = {
