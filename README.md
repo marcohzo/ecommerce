@@ -1,4 +1,4 @@
-# Proyecto de Gestión de Usuarios y Productos con Node.js, Express y MongoDB
+# Ecommerce con Node.js, Express y MongoDB
 
 Este proyecto es una aplicación web desarrollada con **Node.js**, **Express**, y **MongoDB**, que implementa un sistema de gestión de usuarios, productos, carritos de compra y tickets. El objetivo es crear una arquitectura escalable y mantenible utilizando patrones de diseño como **DAO (Data Access Object)** y **Repository Pattern**, además de aplicar buenas prácticas en la organización del código y la implementación de middleware para autenticación y autorización.
 
