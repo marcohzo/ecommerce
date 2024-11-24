@@ -6,7 +6,7 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import cookieParser from "cookie-parser";
 import passport from "passport";
-/* import initializePassport from "../src/config/passport.config.js"; */
+import initializePassport from "../src/config/passport.config.js";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { engine } from "express-handlebars";
@@ -21,8 +21,17 @@ const PORT = process.env.PORT || 3000;
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = dirname(_filename);
 
-const MONGODB = process.env.MONGODB_URI;
 const SECRET_KEY = process.env.SECRET_KEY;
+
+// Configurar sesión
+const sessionConfig = {
+  secret: SECRET_KEY,
+  resave: false,
+  saveUninitialized: false,
+};
+
+// Aplicar el middleware de sesión
+app.use(session(sessionConfig));
 
 // Configuración de handlebars
 app.engine("hbs", engine({ extname: "hbs" }));
@@ -41,7 +50,7 @@ const startServer = async () => {
     // Inicializar los DAOs y conectarse a la base de datos
     //await initializeDaosAndRepositories();
 
-    // Configurar sesión (después de que la conexión a MongoDB esté establecida)
+    /*  // Configurar sesión (después de que la conexión a MongoDB esté establecida)
     app.use(
       session({
         store: MongoStore.create({ mongoUrl: MONGODB, ttl: 600 }),
@@ -49,17 +58,19 @@ const startServer = async () => {
         resave: false,
         saveUninitialized: false,
       })
-    );
+    ); */
 
     // Inicializar Passport
-    /* initializePassport(passport); */
+    initializePassport(passport);
     app.use(passport.initialize());
     app.use(passport.session());
     const route = await import("./routes/users.router.js");
+    const productRouter = await import("./routes/product.routes.js");
+    const cartRouter = await import("./routes/cart.routes.js");
     // Configurar las rutas
     app.use("/", route.default);
-    /*  app.use("/products", productRouter); */
-    /* app.use("/carts", cartRouter); */
+    app.use("/products", productRouter.default);
+    app.use("/cart", cartRouter.default);
 
     // Iniciar el servidor
     app.listen(PORT, () => {

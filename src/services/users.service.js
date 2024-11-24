@@ -17,16 +17,24 @@ const registerUser = async (userData) => {
 };
 
 const loginUser = async ({ email, password }) => {
+  if (!email || !password) throw new Error("Email and password are required");
+
   const user = await UsersRepository.getUserByEmail(email);
-  if (!user) throw new Error("Invalid email or password");
+  if (!user) throw new Error("Invalid email or password1");
 
   const isValidPassword = await bcrypt.compare(password, user.password);
-  if (!isValidPassword) throw new Error("Invalid email or password");
+  if (!isValidPassword) throw new Error("Invalid email or password2");
 
-  const token = jwt.sign({ id: user.id, email: user.email }, secretKey, {
-    expiresIn: "1h",
-  });
-  return token;
+  // Generar el token JWT
+  const token = jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    secretKey,
+    {
+      expiresIn: "1h",
+    }
+  );
+
+  return { token };
 };
 
 const getCurrentUser = async (userData) => {

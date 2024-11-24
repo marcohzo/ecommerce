@@ -19,7 +19,9 @@ export default class ProductsMemory {
   }
 
   async updateProduct(id, productData) {
-    const index = this.products.findIndex((product) => product.id === id);
+    const index = this.products.findIndex(
+      (product) => product.id.toString() === id.toString()
+    );
     if (index >= 0) {
       this.products[index] = { ...this.products[index], ...productData };
       return this.products[index];
@@ -29,10 +31,12 @@ export default class ProductsMemory {
   }
 
   async deleteProduct(id) {
-    const index = this.products.findIndex((product) => product.id === id);
+    const index = this.products.findIndex(
+      (product) => product.id.toString() === id.toString()
+    );
     if (index >= 0) {
       const deletedProduct = this.products.splice(index, 1)[0];
-      return deletedProduct;
+      return { message: "Producto eliminado", product: deletedProduct };
     } else {
       throw new Error(`Producto con ID ${id} no encontrado`);
     }

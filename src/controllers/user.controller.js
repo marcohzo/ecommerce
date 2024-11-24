@@ -2,13 +2,14 @@ import usersService from "../services/users.service.js";
 
 export const registerUser = async (req, res) => {
   try {
-    const { first_name, last_name, email, password, age } = req.body;
+    const { first_name, last_name, email, password, age, role } = req.body;
     const result = await usersService.registerUser({
       first_name,
       last_name,
       email,
       password,
       age,
+      role,
     });
     res.status(201).send({ status: "success", payload: result });
   } catch (error) {
