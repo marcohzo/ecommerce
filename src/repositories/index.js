@@ -1,3 +1,5 @@
-import * as usersService from "../services/users.service.js";
+import { initializeDaosAndRepositories, UserDao } from "../dao/factory.js";
+import UserRepository from "./users/user.repository.js";
 
-export { usersService };
+await initializeDaosAndRepositories();
+export const usersService = new UserRepository(new UserDao());

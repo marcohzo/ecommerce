@@ -1,9 +1,9 @@
-import usersService from "../services/users.service.js";
+import usersServices from "../services/users.service.js";
 
 export const registerUser = async (req, res) => {
   try {
     const { first_name, last_name, email, password, age, role } = req.body;
-    const result = await usersService.registerUser({
+    const result = await usersServices.registerUser({
       first_name,
       last_name,
       email,
@@ -20,7 +20,7 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const token = await usersService.loginUser({ email, password });
+    const token = await usersServices.loginUser({ email, password });
     res.cookie("authToken", token, { httpOnly: true });
     res
       .status(200)
@@ -32,7 +32,7 @@ export const loginUser = async (req, res) => {
 
 export const getCurrentUser = async (req, res) => {
   try {
-    const userDTO = await usersService.getCurrentUser(req.user);
+    const userDTO = await usersServices.getCurrentUser(req.user);
     res.status(200).send({ status: "success", payload: userDTO });
   } catch (error) {
     res.status(500).send({ status: "error", message: error.message });

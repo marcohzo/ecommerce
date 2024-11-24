@@ -1,27 +1,31 @@
-// repositories/user.repository.js
-
+import UserDTO from "../../dao/DTOs/user.dto.js";
 export default class UserRepository {
-  getUsers() {
-    throw new Error("Method not implemented.");
+  constructor(dao) {
+    this.dao = dao;
   }
 
-  getUserById(id) {
-    throw new Error("Method not implemented.");
+  async getUsers() {
+    return await this.dao.getUsers();
   }
 
-  getUserByEmail(email) {
-    throw new Error("Method not implemented.");
+  async getUserById(id) {
+    return await this.dao.getUserById(id);
   }
 
-  createUser(userData) {
-    throw new Error("Method not implemented.");
+  async getUserByEmail(email) {
+    return await this.dao.getUserByEmail(email);
   }
 
-  updateUser(id, userData) {
-    throw new Error("Method not implemented.");
+  async createUser(user) {
+    let userData = new UserDTO(user);
+    return await this.dao.createUser(userData);
   }
 
-  deleteUser(id) {
-    throw new Error("Method not implemented.");
+  async updateUser(id, userData) {
+    return await this.dao.updateUser(id, userData);
+  }
+
+  async deleteUser(id) {
+    return await this.dao.deleteUser(id);
   }
 }

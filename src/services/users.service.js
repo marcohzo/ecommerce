@@ -1,15 +1,14 @@
-import { getUserRepository } from "../dao/factory.js";
 import UserDTO from "../dao/DTOs/user.dto.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { usersService } from "../repositories/index.js";
 
-const UsersRepository = getUserRepository();
 const saltRounds = 10;
 const secretKey = process.env.SECRET_KEY;
 
 const registerUser = async (userData) => {
   const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
-  const newUser = await UsersRepository.createUser({
+  const newUser = await usersService.createUser({
     ...userData,
     password: hashedPassword,
   });
@@ -19,7 +18,7 @@ const registerUser = async (userData) => {
 const loginUser = async ({ email, password }) => {
   if (!email || !password) throw new Error("Email and password are required");
 
-  const user = await UsersRepository.getUserByEmail(email);
+  const user = await usersService.getUserByEmail(email);
   if (!user) throw new Error("Invalid email or password1");
 
   const isValidPassword = await bcrypt.compare(password, user.password);
@@ -41,10 +40,10 @@ const getCurrentUser = async (userData) => {
   return new UserDTO(userData);
 };
 
-const usersService = {
+const usersServices = {
   registerUser,
   loginUser,
   getCurrentUser,
 };
 
-export default usersService;
+export default usersServices;

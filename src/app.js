@@ -65,12 +65,12 @@ const startServer = async () => {
     app.use(passport.initialize());
     app.use(passport.session());
     const route = await import("./routes/users.router.js");
-    const productRouter = await import("./routes/product.routes.js");
-    const cartRouter = await import("./routes/cart.routes.js");
+    /* const productRouter = await import("./routes/product.routes.js");
+    const cartRouter = await import("./routes/cart.routes.js"); */
     // Configurar las rutas
     app.use("/", route.default);
-    app.use("/products", productRouter.default);
-    app.use("/cart", cartRouter.default);
+    /*   app.use("/products", productRouter.default);
+    app.use("/cart", cartRouter.default); */
 
     // Iniciar el servidor
     app.listen(PORT, () => {
