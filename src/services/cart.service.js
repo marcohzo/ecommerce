@@ -1,9 +1,8 @@
-//cart services
-import Cart from "../dao/mongo/models/cart.model.js";
+import { cartsService } from "../repositories/index.js";
 
 export const getCartById = async (id) => {
   try {
-    const cart = await Cart.findById(id).lean();
+    const cart = await cartsService.getCartById(id);
     return cart;
   } catch (error) {
     throw new Error(`Error fetching cart: ${error.message}`);
@@ -12,9 +11,7 @@ export const getCartById = async (id) => {
 
 export const updateCart = async (id, cartData) => {
   try {
-    const updatedCart = await Cart.findByIdAndUpdate(id, cartData, {
-      new: true,
-    });
+    const updatedCart = await cartsService.updateCart(id, cartData);
     return updatedCart;
   } catch (error) {
     throw new Error(`Error updating cart: ${error.message}`);

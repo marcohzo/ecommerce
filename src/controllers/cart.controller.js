@@ -49,7 +49,7 @@ export const purchaseCart = async (req, res) => {
     if (totalAmount > 0) {
       const ticketData = {
         amount: totalAmount,
-        purchaser: req.user.email, // Asumiendo que tienes el email del usuario en req.user
+        purchaser: req.user.email,
       };
 
       const ticket = await createTicket(ticketData);

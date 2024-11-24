@@ -10,9 +10,6 @@ import initializePassport from "../src/config/passport.config.js";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { engine } from "express-handlebars";
-
-/* import productRouter from "./routes/product.routes.js"; */
-/* import cartRouter from "./routes/cart.routes.js"; */
 import { initializeDaosAndRepositories } from "./dao/factory.js";
 
 const app = express();
@@ -66,11 +63,12 @@ const startServer = async () => {
     app.use(passport.session());
     const route = await import("./routes/users.router.js");
     const productRouter = await import("./routes/product.routes.js");
-    //const cartRouter = await import("./routes/cart.routes.js");
+    const cartRouter = await import("./routes/cart.routes.js");
+
     // Configurar las rutas
     app.use("/", route.default);
     app.use("/products", productRouter.default);
-    // app.use("/cart", cartRouter.default);
+    app.use("/cart", cartRouter.default);
 
     // Iniciar el servidor
     app.listen(PORT, () => {
