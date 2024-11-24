@@ -1,21 +1,28 @@
+import ProductDTO from "../../dao/DTOs/product.dto.js";
+
 export default class ProductRepository {
-  getProducts() {
-    throw new Error("Method not implemented.");
+  constructor(dao) {
+    this.dao = dao;
   }
 
-  getProductById(id) {
-    throw new Error("Method not implemented.");
+  async getProducts() {
+    return await this.dao.getProducts();
   }
 
-  createProduct(productData) {
-    throw new Error("Method not implemented.");
+  async getProductById(id) {
+    return await this.dao.getProductById(id);
   }
 
-  updateProduct(id, productData) {
-    throw new Error("Method not implemented.");
+  async createProduct(product) {
+    let productData = new ProductDTO(product);
+    return await this.dao.createProduct(productData);
   }
 
-  deleteProduct(id) {
-    throw new Error("Method not implemented.");
+  async updateProduct(id, productData) {
+    return await this.dao.updateProduct(id, productData);
+  }
+
+  async deleteProduct(id) {
+    return await this.dao.deleteProduct(id);
   }
 }

@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 let UserDao;
-/* let Product; */
+let ProductDao;
 
 const entorno = (process.env.PERSISTENCE || "MONGO").toUpperCase().trim();
 const MONGODB = process.env.MONGODB_URI;
@@ -19,10 +19,10 @@ const initializeDaosAndRepositories = async () => {
         const { default: UsersMongo } = await import("./mongo/users.mongo.js");
         UserDao = UsersMongo;
         // Productos
-        /*      const { default: ProductsMongo } = await import(
+        const { default: ProductsMongo } = await import(
           "./mongo/products.mongo.js"
         );
-        ProductDao = new ProductsMongo(); */
+        ProductDao = ProductsMongo;
       } catch (error) {
         console.error(
           "Error initializing DAOs and Repositories for MongoDB:",
@@ -41,10 +41,10 @@ const initializeDaosAndRepositories = async () => {
         UserDao = UsersMemory;
 
         // Productos
-        /*   const { default: ProductsMemory } = await import(
+        const { default: ProductsMemory } = await import(
           "./memory/products.memory.js"
         );
-        ProductDao = new ProductsMemory(); */
+        ProductDao = ProductsMemory;
       } catch (error) {
         console.error(
           "Error initializing DAOs and Repositories for Memory:",
@@ -59,4 +59,4 @@ const initializeDaosAndRepositories = async () => {
   }
 };
 
-export { initializeDaosAndRepositories, UserDao };
+export { initializeDaosAndRepositories, UserDao, ProductDao };
