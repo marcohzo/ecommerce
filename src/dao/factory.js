@@ -19,21 +19,20 @@ const initializeDaosAndRepositories = async () => {
         await mongoose.connect(MONGODB);
         console.log("Connected to MongoDB.");
         const { default: UsersMongo } = await import("./mongo/users.mongo.js");
-        UserDao = UsersMongo;
+        UserDao = new UsersMongo();
         // Productos
         const { default: ProductsMongo } = await import(
           "./mongo/products.mongo.js"
         );
-        ProductDao = ProductsMongo;
+        ProductDao = new ProductsMongo();
         // Carrito
         const { default: CartMongo } = await import("./mongo/carts.mongo.js");
-        CartDao = CartMongo;
-
+        CartDao = new CartMongo();
         // Tickets
         const { default: TicketsMongo } = await import(
           "./mongo/tickets.mongo.js"
         );
-        TicketDao = TicketsMongo;
+        TicketDao = new TicketsMongo();
       } catch (error) {
         console.error(
           "Error initializing DAOs and Repositories for MongoDB:",
@@ -49,25 +48,22 @@ const initializeDaosAndRepositories = async () => {
         const { default: UsersMemory } = await import(
           "./memory/users.memory.js"
         );
-        UserDao = UsersMemory;
-
+        UserDao = new UsersMemory();
         // Productos
         const { default: ProductsMemory } = await import(
           "./memory/products.memory.js"
         );
-        ProductDao = ProductsMemory;
-
+        ProductDao = new ProductsMemory();
         // Carrito
         const { default: CartMemory } = await import(
           "./memory/carts.memory.js"
         );
-        CartDao = CartMemory;
-
+        CartDao = new CartMemory();
         // Tickets
         const { default: TicketsMemory } = await import(
           "./memory/tickets.memory.js"
         );
-        TicketDao = TicketsMemory;
+        TicketDao = new TicketsMemory();
       } catch (error) {
         console.error(
           "Error initializing DAOs and Repositories for Memory:",

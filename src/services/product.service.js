@@ -9,6 +9,7 @@ export const getProductById = async (id) => {
 };
 
 export const createProduct = async (productData) => {
+  console.log(productData, "in service");
   return await productsService.createProduct(productData);
 };
 

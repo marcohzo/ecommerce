@@ -11,7 +11,8 @@ import CartRepository from "./carts/cart.repository.js";
 import TicketRepository from "./tickets/ticket.repository.js";
 
 await initializeDaosAndRepositories();
-export const usersService = new UserRepository(new UserDao());
-export const productsService = new ProductRepository(new ProductDao());
-export const cartsService = new CartRepository(new CartDao());
-export const ticketsService = new TicketRepository(new TicketDao());
+
+export const usersService = new UserRepository(UserDao);
+export const productsService = new ProductRepository(ProductDao);
+export const cartsService = new CartRepository(CartDao);
+export const ticketsService = new TicketRepository(TicketDao);

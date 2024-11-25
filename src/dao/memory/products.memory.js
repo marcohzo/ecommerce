@@ -13,7 +13,8 @@ export default class ProductsMemory {
   }
 
   async createProduct(productData) {
-    const product = { id: this.nextId++, ...productData };
+    const id = await this.nextId++;
+    const product = { ...productData, id };
     this.products.push(product);
     return product;
   }

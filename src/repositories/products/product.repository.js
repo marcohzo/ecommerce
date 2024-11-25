@@ -15,6 +15,7 @@ export default class ProductRepository {
 
   async createProduct(product) {
     let productData = new ProductDTO(product);
+    console.log(productData);
     return await this.dao.createProduct(productData);
   }
 
