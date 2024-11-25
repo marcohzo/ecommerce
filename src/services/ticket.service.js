@@ -1,8 +1,8 @@
-import Ticket from "../dao/mongo/models/ticket.model.js";
+import { ticketsService } from "../repositories/index.js";
 
 export const createTicket = async (ticketData) => {
   try {
-    const ticket = await Ticket.create(ticketData);
+    const ticket = await ticketsService.createTicket(ticketData);
     return ticket;
   } catch (error) {
     throw new Error(`Error creating ticket: ${error.message}`);

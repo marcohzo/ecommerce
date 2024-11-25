@@ -5,6 +5,7 @@ export const authorize = (requiredRole) => {
     }
 
     const userRole = req.user.role;
+    console.log(userRole);
 
     if (userRole !== requiredRole) {
       return res.status(403).send({ status: "error", message: "Forbidden" });

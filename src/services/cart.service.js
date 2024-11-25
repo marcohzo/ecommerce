@@ -17,3 +17,12 @@ export const updateCart = async (id, cartData) => {
     throw new Error(`Error updating cart: ${error.message}`);
   }
 };
+
+export const createCart = async (cartData) => {
+  try {
+    const newCart = await cartsService.createCart(cartData);
+    return newCart;
+  } catch (error) {
+    throw new Error(`Error creating cart: ${error.message}`);
+  }
+};

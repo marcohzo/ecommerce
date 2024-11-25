@@ -1,4 +1,8 @@
-import { getCartById, updateCart } from "../services/cart.service.js";
+import {
+  getCartById,
+  updateCart,
+  createCart,
+} from "../services/cart.service.js";
 import { getProductById, updateProduct } from "../services/product.service.js";
 import { createTicket } from "../services/ticket.service.js";
 
@@ -80,12 +84,10 @@ export const addProductToCartController = async (req, res) => {
     const productId = req.body.productId;
     const quantity = req.body.quantity;
 
-    const cart = await getCartById(cartId);
+    let cart = await getCartById(cartId);
 
     if (!cart) {
-      return res
-        .status(404)
-        .send({ status: "error", message: "Cart not found" });
+      cart = await createCart({ products: [] });
     }
 
     const product = await getProductById(productId);
