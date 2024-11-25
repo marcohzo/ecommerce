@@ -1,4 +1,4 @@
-import UserDTO from "../dao/DTOs/user.dto.js";
+import PrivatedUserDTO from "../dao/DTOs/user.dto.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { usersService } from "../repositories/index.js";
@@ -37,7 +37,7 @@ const loginUser = async ({ email, password }) => {
 };
 
 const getCurrentUser = async (userData) => {
-  return new UserDTO(userData);
+  return new PrivatedUserDTO(userData);
 };
 
 const usersServices = {
