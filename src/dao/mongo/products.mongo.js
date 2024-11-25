@@ -1,4 +1,4 @@
-import Product from "../../models/product.model.js";
+import Product from "./models/product.model.js";
 
 export default class ProductsMongo {
   async getProducts() {
